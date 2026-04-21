@@ -8,6 +8,7 @@ import ErrorBoundary from 'react-error-boundary'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import SideBar from './SideBar'
 import ActionsForm from './ActionsForm'
+import FireflyGenerator from './FireflyGenerator'
 import { Home } from './Home'
 import { About } from './About'
 
@@ -43,11 +44,12 @@ function App (props) {
             >
               <SideBar></SideBar>
             </View>
-            <View gridArea='content' padding='size-200'>
+            <View gridArea='content' UNSAFE_style={{ overflow: 'auto' }}>
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/actions' element={<ActionsForm runtime={props.runtime} ims={props.ims} />}/>
-                <Route path='/about' element={<About />}/>
+                <Route path='/actions' element={<div style={{ padding: 16 }}><ActionsForm runtime={props.runtime} ims={props.ims} /></div>}/>
+                <Route path='/firefly' element={<FireflyGenerator runtime={props.runtime} ims={props.ims} />}/>
+                <Route path='/about' element={<div style={{ padding: 16 }}><About /></div>}/>
               </Routes>
             </View>
           </Grid>

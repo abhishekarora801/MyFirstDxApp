@@ -18,3 +18,19 @@ runtimeManifest:
           annotations:
             require-adobe-auth: true
             final: true
+        firefly-generate:
+          function: actions/firefly-generate/index.js
+          web: 'yes'
+          runtime: nodejs:22
+          limits:
+            timeout: 60000
+          inputs:
+            LOG_LEVEL: debug
+            FIREFLY_CLIENT_ID: $FIREFLY_CLIENT_ID
+            FIREFLY_CLIENT_SECRET: $FIREFLY_CLIENT_SECRET
+            FIREFLY_SCOPES: $FIREFLY_SCOPES
+            FIREFLY_API_URL: $FIREFLY_API_URL
+            IMS_TOKEN_URL: $IMS_TOKEN_URL
+          annotations:
+            require-adobe-auth: false
+            final: true
