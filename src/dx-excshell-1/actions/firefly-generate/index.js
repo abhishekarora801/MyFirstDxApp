@@ -38,7 +38,7 @@ async function main (params) {
     logger.info('Calling firefly-generate action')
     logger.debug(stringParameters(params))
 
-    const { prompt, contentClass } = params
+    const { prompt, contentClass, size, stylePresets } = params
 
     if (!prompt) {
       return errorResponse(400, 'Missing required parameter: prompt', logger)
@@ -59,6 +59,12 @@ async function main (params) {
     const requestBody = { prompt }
     if (contentClass === 'photo' || contentClass === 'art') {
       requestBody.contentClass = contentClass
+    }
+    if (size && Number.isInteger(size.width) && Number.isInteger(size.height)) {
+      requestBody.size = { width: size.width, height: size.height }
+    }
+    if (Array.isArray(stylePresets) && stylePresets.length > 0) {
+      requestBody.style = { presets: stylePresets.filter(s => typeof s === 'string' && s.length) }
     }
 
     logger.debug('Firefly request body:', JSON.stringify(requestBody))

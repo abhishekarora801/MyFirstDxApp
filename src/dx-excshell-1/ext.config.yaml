@@ -34,33 +34,3 @@ runtimeManifest:
           annotations:
             require-adobe-auth: false
             final: true
-        firefly-remove-bg:
-          function: actions/firefly-remove-bg/index.js
-          web: 'yes'
-          runtime: nodejs:22
-          limits:
-            timeout: 90000
-          inputs:
-            LOG_LEVEL: debug
-            FIREFLY_CLIENT_ID: $FIREFLY_CLIENT_ID
-            FIREFLY_CLIENT_SECRET: $FIREFLY_CLIENT_SECRET
-            FIREFLY_SCOPES: $FIREFLY_SCOPES
-            IMS_TOKEN_URL: $IMS_TOKEN_URL
-          annotations:
-            require-adobe-auth: false
-            final: true
-        firefly-generative-fill:
-          function: actions/firefly-generative-fill/index.js
-          web: 'yes'
-          runtime: nodejs:22
-          limits:
-            timeout: 90000
-          inputs:
-            LOG_LEVEL: debug
-            FIREFLY_CLIENT_ID: $FIREFLY_CLIENT_ID
-            FIREFLY_CLIENT_SECRET: $FIREFLY_CLIENT_SECRET
-            FIREFLY_SCOPES: $FIREFLY_SCOPES
-            IMS_TOKEN_URL: $IMS_TOKEN_URL
-          annotations:
-            require-adobe-auth: false
-            final: true
