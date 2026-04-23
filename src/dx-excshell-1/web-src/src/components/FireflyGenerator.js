@@ -6,6 +6,7 @@ import allActions from '../config.json'
 import actionWebInvoke from '../utils'
 
 const FIREFLY_ACTION = Object.keys(allActions).find(k => k.includes('firefly-generate')) || ''
+const AEM_UPLOAD_ACTION = Object.keys(allActions).find(k => k.includes('aem-upload')) || ''
 
 const ASPECT_RATIOS = [
   { id: 'square', label: 'Square', sub: '1:1', width: 2048, height: 2048 },
@@ -269,8 +270,40 @@ const styles = {
   }
 }
 
-function ImageCard ({ img, idx }) {
+function ImageCard ({ img, idx, onSaveToAem }) {
   const [hovered, setHovered] = useState(false)
+  const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
+  const [saveResult, setSaveResult] = useState(null) // { assetUrl } on success
+  const [saveError, setSaveError] = useState(null)
+
+  async function handleSave () {
+    if (!onSaveToAem || saveState === 'saving') return
+    setSaveState('saving')
+    setSaveError(null)
+    try {
+      const res = await onSaveToAem(img, idx)
+      setSaveResult(res)
+      setSaveState('saved')
+    } catch (e) {
+      setSaveError(e.message || 'Upload failed')
+      setSaveState('error')
+    }
+  }
+
+  const saveLabel = {
+    idle: '↗ Save to AEM',
+    saving: 'Saving…',
+    saved: '✓ Saved',
+    error: '⚠ Retry'
+  }[saveState]
+
+  const saveStyle = {
+    ...styles.downloadBtn,
+    ...(saveState === 'saved' ? { background: 'rgba(74,222,128,0.25)', borderColor: 'rgba(74,222,128,0.5)' } : {}),
+    ...(saveState === 'error' ? { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(239,68,68,0.5)' } : {}),
+    ...(saveState === 'saving' ? { opacity: 0.7, cursor: 'wait' } : {})
+  }
+
   return (
     <div
       style={{
@@ -288,9 +321,33 @@ function ImageCard ({ img, idx }) {
       />
       <div style={{ ...styles.imageOverlay, opacity: hovered ? 1 : 0 }}>
         {img.seed && <div style={styles.seedTag}>SEED: {img.seed}</div>}
-        <a href={img.blobUrl || img.downloadUrl} download={`firefly-${idx + 1}.jpg`} target='_blank' rel='noreferrer' style={styles.downloadBtn}>
-          ↓ Download
-        </a>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <a href={img.blobUrl || img.downloadUrl} download={`firefly-${idx + 1}.jpg`} target='_blank' rel='noreferrer' style={styles.downloadBtn}>
+            ↓ Download
+          </a>
+          {AEM_UPLOAD_ACTION && (
+            saveState === 'saved' && saveResult?.assetUrl
+              ? (
+                <a href={saveResult.assetUrl} target='_blank' rel='noreferrer' style={saveStyle} title={saveResult.assetPath}>
+                  {saveLabel}
+                </a>
+                )
+              : (
+                <button
+                  type='button'
+                  style={{ ...saveStyle, border: saveStyle.border || '1px solid rgba(255,255,255,0.3)' }}
+                  onClick={handleSave}
+                  disabled={saveState === 'saving'}
+                  title={saveError || 'Upload to AEM DAM'}
+                >
+                  {saveLabel}
+                </button>
+                )
+          )}
+        </div>
+        {saveState === 'error' && saveError && (
+          <div style={{ marginTop: 6, fontSize: 11, color: '#fca5a5' }}>{saveError}</div>
+        )}
       </div>
     </div>
   )
@@ -358,6 +415,20 @@ function FireflyGenerator (props) {
 
   function handleKeyDown (e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') generateImages()
+  }
+
+  async function handleSaveToAem (img, idx) {
+    if (!AEM_UPLOAD_ACTION) throw new Error('aem-upload action not deployed')
+    if (!img?.downloadUrl) throw new Error('No source image URL')
+    const filename = `firefly-${Date.now()}-${img.seed || idx}.jpg`
+    const res = await actionWebInvoke(allActions[AEM_UPLOAD_ACTION], getHeaders(), {
+      imageUrl: img.downloadUrl,
+      filename
+    })
+    if (!res || res.error) {
+      throw new Error(res?.error || 'AEM upload failed')
+    }
+    return res
   }
 
   return (
@@ -481,7 +552,7 @@ function FireflyGenerator (props) {
           </div>
           <div style={styles.imageGrid}>
             {images.map((img, idx) => (
-              <ImageCard key={idx} img={img} idx={idx} />
+              <ImageCard key={idx} img={img} idx={idx} onSaveToAem={handleSaveToAem} />
             ))}
           </div>
         </div>

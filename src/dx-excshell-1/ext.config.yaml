@@ -18,6 +18,25 @@ runtimeManifest:
           annotations:
             require-adobe-auth: true
             final: true
+        aem-upload:
+          function: actions/aem-upload/index.js
+          web: 'yes'
+          runtime: nodejs:22
+          limits:
+            timeout: 60000
+          inputs:
+            LOG_LEVEL: debug
+            AEM_HOST: $AEM_HOST
+            AEM_CLIENT_ID: $AEM_CLIENT_ID
+            AEM_CLIENT_SECRET: $AEM_CLIENT_SECRET
+            AEM_TECHNICAL_ACCOUNT_ID: $AEM_TECHNICAL_ACCOUNT_ID
+            AEM_ORG_ID: $AEM_ORG_ID
+            AEM_METASCOPE: $AEM_METASCOPE
+            AEM_IMS_HOST: $AEM_IMS_HOST
+            AEM_PRIVATE_KEY: $AEM_PRIVATE_KEY
+          annotations:
+            require-adobe-auth: false
+            final: true
         firefly-generate:
           function: actions/firefly-generate/index.js
           web: 'yes'
