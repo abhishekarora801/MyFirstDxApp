@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { ProgressCircle } from '@adobe/react-spectrum'
+import './FireflyGenerator.css'
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
@@ -432,19 +433,19 @@ function FireflyGenerator (props) {
   }
 
   return (
-    <div style={styles.page}>
+    <div style={styles.page} className='fg-page'>
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.badge}>
           <span>✦</span> Adobe Firefly
         </div>
-        <h1 style={styles.title}>Image Studio</h1>
+        <h1 style={styles.title} className='fg-title'>Image Studio</h1>
         <p style={styles.subtitle}>
           Generate images using Adobe Firefly's generative AI.
         </p>
       </div>
 
-      <div style={styles.card}>
+      <div style={styles.card} className='fg-card'>
         <label style={styles.promptLabel}>Describe your image</label>
         <textarea
           style={{
@@ -462,10 +463,10 @@ function FireflyGenerator (props) {
           rows={4}
         />
 
-        <div style={styles.controlsRow}>
+        <div style={styles.controlsRow} className='fg-controls-row'>
           <div style={styles.controlGroup}>
             <span style={styles.controlLabel}>Image Type</span>
-            <div style={styles.toggleRow}>
+            <div style={styles.toggleRow} className='fg-toggle-row'>
               {[
                 { id: 'photo', icon: '📷', label: 'Photo' },
                 { id: 'art', icon: '🎨', label: 'Art' }
@@ -485,7 +486,7 @@ function FireflyGenerator (props) {
 
           <div style={{ ...styles.controlGroup, flex: 1, minWidth: 260 }}>
             <span style={styles.controlLabel}>Aspect Ratio</span>
-            <div style={styles.toggleRow}>
+            <div style={styles.toggleRow} className='fg-toggle-row'>
               {ASPECT_RATIOS.map(opt => (
                 <button
                   key={opt.id}
@@ -504,7 +505,7 @@ function FireflyGenerator (props) {
 
         <div style={{ marginTop: 20 }}>
           <span style={styles.controlLabel}>Style Preset</span>
-          <div style={{ ...styles.toggleRow, marginTop: 8, flexWrap: 'wrap' }}>
+          <div style={{ ...styles.toggleRow, marginTop: 8, flexWrap: 'wrap' }} className='fg-toggle-row'>
             {(STYLE_PRESETS[contentClass] || STYLE_PRESETS.photo).map(p => (
               <button
                 key={p.id}
@@ -528,6 +529,7 @@ function FireflyGenerator (props) {
         <div style={{ marginTop: 20 }}>
           <button
             style={{ ...styles.generateBtn, ...(isDisabled ? styles.generateBtnDisabled : {}) }}
+            className='fg-generate-btn'
             onClick={generateImages}
             disabled={isDisabled}
             onMouseEnter={e => { if (!isDisabled) e.currentTarget.style.opacity = '0.85' }}
@@ -550,7 +552,7 @@ function FireflyGenerator (props) {
             <h2 style={styles.resultsTitle}>Generated Image</h2>
             <span style={styles.resultsBadge}>{images.length} image{images.length > 1 ? 's' : ''}</span>
           </div>
-          <div style={styles.imageGrid}>
+          <div style={styles.imageGrid} className='fg-image-grid'>
             {images.map((img, idx) => (
               <ImageCard key={idx} img={img} idx={idx} onSaveToAem={handleSaveToAem} />
             ))}

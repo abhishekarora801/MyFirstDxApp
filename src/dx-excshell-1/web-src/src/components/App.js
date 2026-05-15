@@ -5,12 +5,47 @@
 import React from 'react'
 import { Provider, defaultTheme, Grid, View } from '@adobe/react-spectrum'
 import ErrorBoundary from 'react-error-boundary'
-import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import SideBar from './SideBar'
 import ActionsForm from './ActionsForm'
 import FireflyGenerator from './FireflyGenerator'
 import { Home } from './Home'
 import { About } from './About'
+
+function AppLayout (props) {
+  const location = useLocation()
+  const isFullScreen = location.pathname === '/firefly'
+
+  return (
+    <Provider theme={defaultTheme} colorScheme={'light'}>
+      <Grid
+        areas={isFullScreen ? ['content'] : ['sidebar content']}
+        columns={isFullScreen ? ['1fr'] : ['256px', '3fr']}
+        rows={['auto']}
+        height='100vh'
+        gap='size-100'
+      >
+        {!isFullScreen && (
+          <View
+            gridArea='sidebar'
+            backgroundColor='gray-200'
+            padding='size-200'
+          >
+            <SideBar></SideBar>
+          </View>
+        )}
+        <View gridArea='content' UNSAFE_style={{ overflow: 'auto' }}>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/actions' element={<div style={{ padding: 16 }}><ActionsForm runtime={props.runtime} ims={props.ims} /></div>}/>
+            <Route path='/firefly' element={<FireflyGenerator runtime={props.runtime} ims={props.ims} />}/>
+            <Route path='/about' element={<div style={{ padding: 16 }}><About /></div>}/>
+          </Routes>
+        </View>
+      </Grid>
+    </Provider>
+  )
+}
 
 function App (props) {
   console.log('runtime object:', props.runtime)
@@ -29,31 +64,7 @@ function App (props) {
   return (
     <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
       <Router>
-        <Provider theme={defaultTheme} colorScheme={'light'}>
-          <Grid
-            areas={['sidebar content']}
-            columns={['256px', '3fr']}
-            rows={['auto']}
-            height='100vh'
-            gap='size-100'
-          >
-            <View
-              gridArea='sidebar'
-              backgroundColor='gray-200'
-              padding='size-200'
-            >
-              <SideBar></SideBar>
-            </View>
-            <View gridArea='content' UNSAFE_style={{ overflow: 'auto' }}>
-              <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/actions' element={<div style={{ padding: 16 }}><ActionsForm runtime={props.runtime} ims={props.ims} /></div>}/>
-                <Route path='/firefly' element={<FireflyGenerator runtime={props.runtime} ims={props.ims} />}/>
-                <Route path='/about' element={<div style={{ padding: 16 }}><About /></div>}/>
-              </Routes>
-            </View>
-          </Grid>
-        </Provider>
+        <AppLayout runtime={props.runtime} ims={props.ims} />
       </Router>
     </ErrorBoundary>
   )
