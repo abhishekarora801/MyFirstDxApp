@@ -115,7 +115,6 @@ const styles = {
   },
   controlsRow: {
     display: 'flex',
-    alignItems: 'flex-end',
     gap: 16,
     marginTop: 20,
     flexWrap: 'wrap'

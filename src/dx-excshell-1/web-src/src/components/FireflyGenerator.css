@@ -18,6 +18,12 @@
   flex-wrap: wrap;
 }
 
+.fg-controls-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .fg-toggle-row {
   display: flex;
   gap: 10px;
@@ -66,12 +72,21 @@
   .fg-controls-row {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+  }
+
+  .fg-controls-row > div {
+    width: 100%;
   }
 
   .fg-toggle-row {
     flex-wrap: wrap;
     gap: 8px;
     justify-content: flex-start;
+  }
+
+  .fg-toggle-row button {
+    flex: 0 0 auto !important;
   }
 
   .fg-image-grid {
